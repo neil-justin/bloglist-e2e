@@ -1,9 +1,10 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http:localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         name: 'Matti Luukkainen',
         username: 'mluukkai',
@@ -11,25 +12,19 @@ describe('Blog app', () => {
       }
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   // write a test here for when a login form is shown
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByTestId('username-input').fill('mluukkai')
-      await page.getByTestId('password-input').fill('salainen')
-      await page.getByRole('button', { name: 'login' }).click()
-
+      await loginWith(page, 'mluukkai', 'salainen')
       await expect(page.getByText('Matti Luukkainen logged in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByTestId('username-input').fill('mluukkai')
-      await page.getByTestId('password-input').fill('wrongPassword')
-      await page.getByRole('button', { name: 'login' }).click()
-
+      await loginWith(page, 'mluukkai', 'wrongPassword')
       await expect(page.getByTestId('notification-element'))
         .toContainText('wrong username or password')
     })
