@@ -15,7 +15,11 @@ describe('Blog app', () => {
     await page.goto('/')
   })
 
-  // write a test here for when a login form is shown
+  test.only('Login form is shown', async ({ page }) => {
+    await expect(page.getByTestId('username-input')).toBeVisible()
+    await expect(page.getByTestId('password-input')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
+  })
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
