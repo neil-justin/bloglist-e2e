@@ -66,5 +66,18 @@ describe('Blog app', () => {
 
       await expect(page.getByTestId('likescount')).toContainText('1')
     })
+
+    test('a blog can be deleted', async ({ page }) => {
+      await createBlog(page, {
+        title: 'CSS Container Queries',
+        author: 'Geoff Graham',
+        url: 'https://css-tricks.com/css-container-queries/'
+      })
+      await page.getByRole('button', { name: 'view' }).click()
+      page.on('dialog', dialog => dialog.accept())
+      await page.getByRole('button', { name: 'remove' }).click()
+
+      await expect(page.locator('.blog-card')).not.toBeVisible()
+    })
   })
 })
