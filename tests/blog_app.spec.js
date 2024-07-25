@@ -1,5 +1,6 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
+const exp = require('constants')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -40,18 +41,30 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByTestId('blogtitle-input').fill('CSS Container Queries')
-      await page.getByTestId('blogauthor-input').fill('Geoff Graham')
-      await page.getByTestId('blogurl-input')
-        .fill('https://css-tricks.com/css-container-queries/')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createBlog(page, {
+        title: 'CSS Container Queries',
+        author: 'Geoff Graham',
+        url: 'https://css-tricks.com/css-container-queries/'
+      })
       await page.getByTestId('notification-element').waitFor()
 
       await expect(page.getByTestId('notification-element'))
         .toBeVisible()
       await expect(page.getByTestId('notification-element'))
         .toContainText('a new blog titled CSS Container Queries is added')
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await createBlog(page, {
+        title: 'CSS Container Queries',
+        author: 'Geoff Graham',
+        url: 'https://css-tricks.com/css-container-queries/'
+      })
+      // expand blog details
+      await page.getByRole('button', { name: 'view' }).click()
+      await page.getByRole('button', { name: 'like' }).click()
+
+      await expect(page.getByTestId('likescount')).toContainText('1')
     })
   })
 })
