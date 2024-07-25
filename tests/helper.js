@@ -8,8 +8,7 @@ const createBlog = async (page, blog) => {
   await page.getByRole('button', { name: 'new blog' }).click()
   await page.getByTestId('blogtitle-input').fill(blog.title)
   await page.getByTestId('blogauthor-input').fill(blog.author)
-  await page.getByTestId('blogurl-input')
-    .fill('https://css-tricks.com/css-container-queries/')
+  await page.getByTestId('blogurl-input').fill(blog.url)
   await page.getByRole('button', { name: 'create' }).click()
 
 }
